@@ -2,18 +2,14 @@
   description = "A Nix Flake for Android Java app development.";
 
   inputs = {
-    # Use the unstable channel for the latest packages
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs =
-    { self, ... }@inputs:
-    inputs.flake-utils.lib.eachDefaultSystem (
-      system:
+  outputs = { self, nixpkgs, flake-utils}:
+    flake-utils.lib.eachDefaultSystem (system:
       let
-        unstable = import inputs.nixpkgs {
+        pkgs = import nixpkgs {
           inherit system;
           config = {
             android_sdk.accept_license = true;
@@ -21,7 +17,7 @@
           };
         };
 
-        androidComposition = unstable.androidenv.composeAndroidPackages {
+        androidComposition = pkgs.androidenv.composeAndroidPackages {
           platformVersions = [ "33" ];
           buildToolsVersions = [ "33.0.1" ];
           abiVersions = [ "x86_64" ];
@@ -32,17 +28,20 @@
         };
 
         androidSdk = androidComposition.androidsdk;
-      in
-      {
-        devShell = unstable.mkShell {
+
+        # Define build dependencies to be reused
+        buildDeps = [
+          pkgs.gradle_7
+          androidSdk
+          pkgs.jdk17
+        ];
+
+      in {
+        devShell = pkgs.mkShell {
           buildInputs = [
-            unstable.git
-            androidSdk
-            unstable.jdk17
-            unstable.gradle_7
-            unstable.powershell
-            unstable.scrcpy
-          ];
+            pkgs.git
+            pkgs.scrcpy
+          ] ++ buildDeps;
 
           shellHook = ''
             export ANDROID_SDK_ROOT="${androidSdk}/libexec/android-sdk"
@@ -52,6 +51,32 @@
             # Add android tools and emulator to PATH
             export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
           '';
+        };
+
+        packages = rec {
+          default = buildRelease;
+
+          buildRelease = pkgs.stdenv.mkDerivation {
+            name = "extra_keyboard_layouts_release";
+            buildInputs = buildDeps;
+            src = ./.;
+
+            buildPhase = ''
+              gradle assembleRelease
+              cp -r app/build/outputs/apk/release/*.apk $out
+            '';
+          };
+
+          buildDebug = pkgs.stdenv.mkDerivation {
+            name = "extra_keyboard_layouts_debug";
+            buildInputs = buildDeps;
+            src = ./.;
+
+            buildPhase = ''
+              gradle assembleDebug
+              cp -r app/build/outputs/apk/debug/*.apk $out
+            '';
+          };
         };
       }
     );
