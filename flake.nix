@@ -66,59 +66,7 @@
           shellHook = androidEnvSetup;
         };
 
-        # Run dependency resolution package seperately and disable sandboxing so gradle can fetch the required dependencies
-        # nix build .#gradleDependencies --option sandbox false
-
-        # Build the release and debug APKs
-        # nix build
-        # nix build .#buildDebug
-        packages = rec {
-          default = buildRelease;
-
-          gradleDependencies = pkgs.stdenv.mkDerivation {
-            __noChroot = true;
-            pname = "gradle_dependencies";
-            version = projectVersion;
-            src = ./.;
-
-            outputHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # TODO: This is a dummy hash - replace after first run with the actual hash
-            buildInputs = buildDeps;
-
-            buildPhase = ''
-              ${androidEnvSetup}
-              export GRADLE_USER_HOME=$out
-              gradle --no-daemon --refresh-dependencies --info dependencies
-            '';
-          };
-
-          buildRelease = pkgs.stdenv.mkDerivation {
-            name = "extra_keyboard_layouts_release";
-            version = projectVersion;
-            buildInputs = buildDeps;
-            src = ./.;
-
-            buildPhase = ''
-              ${androidEnvSetup}
-              export GRADLE_USER_HOME=${self.packages.gradleDependencies}
-              gradle --no-daemon --offline assembleRelease
-              cp -r app/build/outputs/apk/release/*.apk $out
-            '';
-          };
-
-          buildDebug = pkgs.stdenv.mkDerivation {
-            name = "extra_keyboard_layouts_debug";
-            version = projectVersion;
-            buildInputs = buildDeps;
-            src = ./.;
-
-            buildPhase = ''
-              ${androidEnvSetup}
-              export GRADLE_USER_HOME=${self.packages.gradleDependencies}
-              gradle --no-daemon --offline assembleDebug
-              cp -r app/build/outputs/apk/debug/*.apk $out
-            '';
-          };
-        };
+        # TODO: Add package outputs for debug and release builds
       }
     );
 }

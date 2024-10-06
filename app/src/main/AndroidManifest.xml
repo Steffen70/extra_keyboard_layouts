@@ -1,18 +1,11 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="varzan.extraKeyboardLayouts">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="mx.seventy.swissKeyboardLayout">
 
-    <application
-        android:allowBackup="true"
-        android:label="@string/app_name"
-        android:supportsRtl="true">
-        <receiver android:name=".InputDeviceReceiver"
-            android:label="@string/keyboard_layouts_label"
-            android:exported="true">
+    <application android:allowBackup="true" android:label="@string/app_name" android:supportsRtl="true">
+        <receiver android:name=".InputDeviceReceiver" android:label="@string/keyboard_layouts_label" android:exported="true">
             <intent-filter>
                 <action android:name="android.hardware.input.action.QUERY_KEYBOARD_LAYOUTS" />
             </intent-filter>
-            <meta-data android:name="android.hardware.input.metadata.KEYBOARD_LAYOUTS"
-                android:resource="@xml/keyboard_layouts" />
+            <meta-data android:name="android.hardware.input.metadata.KEYBOARD_LAYOUTS" android:resource="@xml/keyboard_layouts" />
         </receiver>
     </application>
 
