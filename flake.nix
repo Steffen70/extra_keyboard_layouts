@@ -56,10 +56,6 @@
 
       in
       {
-        # Build apk via `gradle build` or `gradle assembleRelease`
-        # - then zipalign the signed apk `zipalign -v 4 app-release-unsigned.apk swiss_keyboard_unsigned.apk`
-        # - and finally sign the apk `apksigner sign --ks ~/.android/debug.keystore --ks-pass pass:android --key-pass pass:android --out swiss_keyboard.apk swiss_keyboard_unsigned.apk`
-
         devShell = pkgs.mkShell {
           buildInputs = [
             pkgs.nixfmt-rfc-style
