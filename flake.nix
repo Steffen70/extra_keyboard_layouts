@@ -56,6 +56,9 @@
 
       in
       {
+        # Build apk via `gradle build` or `gradle assembleRelease`
+        # - then sign the release apk with the Android debug keystore `jarsigner -verbose -keystore ~/.android/debug.keystore -storepass android -keypass android app-release-unsigned.apk androiddebugkey`
+
         devShell = pkgs.mkShell {
           buildInputs = [
             pkgs.nixfmt-rfc-style
