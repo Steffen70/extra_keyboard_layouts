@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <keyboard-layouts xmlns:android="http://schemas.android.com/apk/res/android">
-    <keyboard-layout android:label="@string/keyboard_layout_de_ch_nodeadkeys" android:name="keyboard_layout_de_ch_nodeadkeys" android:keyboardLayout="@raw/keyboard_layout_de_ch_nodeadkeys"/>
+    <keyboard-layout android:label="@string/keyboard_layout_swiss_german" android:name="keyboard_layout_swiss_german" android:keyboardLayout="@raw/keyboard_layout_swiss_german"/>
 </keyboard-layouts>
