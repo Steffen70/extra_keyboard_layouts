@@ -19,3 +19,5 @@ app/release/
 *.keystore
 *.pepk
 .vs/slnx.sqlite
+*.apk
+*.idsig
