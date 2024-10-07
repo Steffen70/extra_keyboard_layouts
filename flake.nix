@@ -51,13 +51,14 @@
           echo "ANDROID_SDK_ROOT set to $ANDROID_SDK_ROOT"
 
           # Add android tools and emulator to PATH
-          export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
+          export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/build-tools/33.0.1:$ANDROID_SDK_ROOT/platform-tools:$PATH"
         '';
 
       in
       {
         # Build apk via `gradle build` or `gradle assembleRelease`
-        # - then sign the release apk with the Android debug keystore `jarsigner -verbose -keystore ~/.android/debug.keystore -storepass android -keypass android app-release-unsigned.apk androiddebugkey`
+        # - then zipalign the signed apk `zipalign -v 4 app-release-unsigned.apk swiss_keyboard_unsigned.apk`
+        # - and finally sign the apk `apksigner sign --ks ~/.android/debug.keystore --ks-pass pass:android --key-pass pass:android --out swiss_keyboard.apk swiss_keyboard_unsigned.apk`
 
         devShell = pkgs.mkShell {
           buildInputs = [
